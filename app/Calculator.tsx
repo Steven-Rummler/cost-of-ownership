@@ -31,25 +31,42 @@ interface Assumptions {
   extraMaintenancePerMilePer50000Miles: number;
 }
 
-const chevyBolt: Car = {
-  name: 'Chevy Bolt',
+const cars: Car[] = [{
+  name: '2018 Chevy Bolt',
   fuel: 'electric',
   year: 2018,
   vehicleListPrice: 15000,
   miles: 22567,
   fuelPer100Miles: 28
-};
-
-const cx5: Car = {
-  name: 'Mazda CX-5',
+}, {
+  name: '2023 Mazda CX-5',
+  fuel: 'gas',
+  year: 2023,
+  vehicleListPrice: 30000,
+  miles: 0,
+  fuelPer100Miles: 4
+}, {
+  name: '2014 Nissan Leaf',
+  fuel: 'electric',
+  year: 2014,
+  vehicleListPrice: 5788,
+  miles: 66082,
+  fuelPer100Miles: 30
+}, {
+  name: '2018 Toyota Corolla',
   fuel: 'gas',
   year: 2018,
-  vehicleListPrice: 15000,
-  miles: 22567,
-  fuelPer100Miles: 28
-};
-
-const cars = [chevyBolt, cx5];
+  vehicleListPrice: 12800,
+  miles: 13300,
+  fuelPer100Miles: 3.1
+}, {
+  name: '2020 Tesla Model 3',
+  fuel: 'electric',
+  year: 2020,
+  vehicleListPrice: 19986,
+  miles: 46129,
+  fuelPer100Miles: 26
+}];
 
 const defaultAssumptions: Assumptions = {
   // Miles
