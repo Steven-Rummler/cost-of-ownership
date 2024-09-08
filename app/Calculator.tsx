@@ -1,14 +1,18 @@
 'use client';
 
 import { useState } from "react";
+import { QueryClient, QueryClientProvider, useQuery } from "react-query";
+import { validateVehicleSearchResponse } from "./validators/vehicle";
 
 interface Car {
   name: string;
-  fuel: 'gas' | 'electric';
+  make: string;
+  model: string
   year: number;
+  fuelPer100Miles: number;
+  fuel: 'gas' | 'electric';
   vehicleListPrice: number;
   miles: number;
-  fuelPer100Miles: number;
 }
 
 interface Assumptions {
@@ -33,36 +37,46 @@ interface Assumptions {
 
 const cars: Car[] = [{
   name: '2018 Chevy Bolt',
-  fuel: 'electric',
+  make: 'Chevrolet',
+  model: 'Bolt',
   year: 2018,
+  fuel: 'electric',
   vehicleListPrice: 15000,
   miles: 22567,
   fuelPer100Miles: 28
 }, {
   name: '2023 Mazda CX-5',
-  fuel: 'gas',
+  make: 'Mazda',
+  model: 'CX-5',
   year: 2023,
+  fuel: 'gas',
   vehicleListPrice: 30000,
   miles: 0,
   fuelPer100Miles: 4
 }, {
   name: '2014 Nissan Leaf',
-  fuel: 'electric',
+  make: 'Nissan',
+  model: 'Leaf',
   year: 2014,
+  fuel: 'electric',
   vehicleListPrice: 5788,
   miles: 66082,
   fuelPer100Miles: 30
 }, {
   name: '2018 Toyota Corolla',
-  fuel: 'gas',
+  make: 'Toyota',
+  model: 'Corolla',
   year: 2018,
+  fuel: 'gas',
   vehicleListPrice: 12800,
   miles: 13300,
   fuelPer100Miles: 3.1
 }, {
   name: '2020 Tesla Model 3',
-  fuel: 'electric',
+  make: 'Tesla',
+  model: 'Model 3',
   year: 2020,
+  fuel: 'electric',
   vehicleListPrice: 19986,
   miles: 46129,
   fuelPer100Miles: 26
@@ -88,16 +102,36 @@ const defaultAssumptions: Assumptions = {
   extraMaintenancePerMilePer50000Miles: .005,
 };
 
+const queryClient = new QueryClient();
+
 export default function Calculator() {
+  return <QueryClientProvider client={queryClient}>
+    <CalculatorContent />
+  </QueryClientProvider>
+}
+
+function CalculatorContent() {
   // Car Info
-  const [fuel, setFuel] = useState<'gas' | 'electric'>('electric');
-  const [year, setYear] = useState(2018);
-  const [vehicleListPrice, setVehicleListPrice] = useState(15000);
-  const [miles, setMiles] = useState(22567);
-  const [fuelPer100Miles, setFuelPer100Miles] = useState(28);
-  const [annualMiles, setAnnualMiles] = useState(8000);
+  const [make, setMake] = useState(cars[0].make);
+  const [model, setModel] = useState(cars[0].model);
+  const [fuel, setFuel] = useState<'gas' | 'electric'>(cars[0].fuel);
+  const [year, setYear] = useState(cars[0].year);
+  const [vehicleListPrice, setVehicleListPrice] = useState(cars[0].vehicleListPrice);
+  const [miles, setMiles] = useState(cars[0].miles);
+  const [fuelPer100Miles, setFuelPer100Miles] = useState(cars[0].fuelPer100Miles);
+
+  // Search Data
+  const { data: searchData } = useQuery({
+    queryKey: ['vehicle', { make, model, year }],
+    queryFn: () => fetch('/api/vehicle', { method: 'POST', body: JSON.stringify({ make, model, year }) })
+      .then(res => res.json())
+      .then(data => validateVehicleSearchResponse(data) ? data : Promise.reject('Invalid response'))
+  })
+  // console.log(searchData?.map(vehicle => `${vehicle.year} ${vehicle.make} ${vehicle.model}`).join(', '));
+  // console.log(searchData?.[0]);
 
   // Miles
+  const [annualMiles, setAnnualMiles] = useState(8000);
   const [gasLifespanMiles, setGasLifespanMiles] = useState(200000);
   const [evLifespanMiles, setEvLifespanMiles] = useState(180000);
   const lifespanMiles = fuel === 'gas' ? gasLifespanMiles : evLifespanMiles;
@@ -170,13 +204,17 @@ export default function Calculator() {
         <div className='col-span-2 flex gap-1 flex-wrap'>
           {cars.map(car => <button key={car.name} className='px-2 rounded border border-gray-500' onClick={() => setCarInfo(car.name)}>{car.name}</button>)}
         </div>
+        <label>Make</label>
+        <input value={make} onChange={e => setMake(e.target.value)} />
+        <label>Model</label>
+        <input value={model} onChange={e => setModel(e.target.value)} />
+        <label>Vehicle Year</label>
+        <input type="number" value={year} onChange={e => setYear(parseFloat(e.target.value))} />
         <label>Fuel type</label>
         <select value={fuel} onChange={e => setFuel(e.target.value as 'gas' | 'electric')}>
           <option value="gas">Gas</option>
           <option value="electric">Electric</option>
         </select>
-        <label>Vehicle Year</label>
-        <input type="number" value={year} onChange={e => setYear(parseFloat(e.target.value))} />
         <label>Price</label>
         <input type="number" value={vehicleListPrice} onChange={e => setVehicleListPrice(parseFloat(e.target.value))} />
         <label>Miles</label>
