@@ -94,7 +94,7 @@ export default function Calculator() {
 
   const remainingMiles = lifespanMiles - miles;
 
-  const totalSalePrice = vehicleListPrice * (1 + salesTaxRate) + bullcrapDealerFees + registrationCost;
+  const totalSalePrice = vehicleListPrice * (1 + salesTaxRate); // + bullcrapDealerFees + registrationCost;
   const salePricePerRemainingMile = totalSalePrice / remainingMiles;
 
   const fuelPerMile = fuelPer100Miles / 100;
@@ -172,10 +172,10 @@ export default function Calculator() {
           <input type="number" value={annualInsuranceRate} onChange={e => setAnnualInsuranceRate(parseFloat(e.target.value))} />
           <label>Sales tax rate</label>
           <input type="number" value={salesTaxRate} onChange={e => setSalesTaxRate(parseFloat(e.target.value))} />
-          <label>Dealer fees</label>
+          {/* <label>Dealer fees</label>
           <input type="number" value={bullcrapDealerFees} onChange={e => setBullcrapDealerFees(parseInt(e.target.value))} />
           <label>Registration cost</label>
-          <input type="number" value={registrationCost} onChange={e => setRegistrationCost(parseInt(e.target.value))} />
+          <input type="number" value={registrationCost} onChange={e => setRegistrationCost(parseInt(e.target.value))} /> */}
           <label>Extra maintenance per mile per year</label>
           <input type="number" value={extraMaintenancePerMilePerYear} onChange={e => setExtraMaintenancePerMilePerYear(parseFloat(e.target.value))} />
           <label>Extra maintenance per mile per 50,000 miles</label>
